@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Concrete;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Concrete.EntityFramework;
 using DataAccess.Concrete.InMemory;
 using System;
@@ -10,9 +12,9 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            // getCarAll();
+            //getCarAll();
 
-            //GetColorTest();
+            GetColorTest();
 
             //GetBrandTest();
 
@@ -23,40 +25,78 @@ namespace ConsoleUI
         private static void joinTest()
         {
             CarManager carManager = new CarManager(new EfCarDal());
-            foreach (var cars in carManager.GetCarDetails())
+            var result = carManager.GetCarDetails();
+            if (result.Success)
             {
-                Console.WriteLine(cars.BrandName + " "
-                    + cars.Description + " - "
-                    + cars.ColorName + " renkli arabanın günlük kirası: "
-                    + cars.DailyPrice + " ");
+
+                foreach (var cars in result.Data)
+                {
+                    Console.WriteLine(cars.BrandName + " "
+                        + cars.Description + " - "
+                        + cars.ColorName + " renkli arabanın günlük kirası: "
+                        + cars.DailyPrice + " ");
+                }
             }
+            else
+            {
+                Console.WriteLine(result.Message);
+            }
+
         }
 
         private static void GetBrandTest()
         {
             BrandManager brandManager = new BrandManager(new EfBrandDal());
-            foreach (var brands in brandManager.GetAll())
+            var result = brandManager.GetAll();
+            if (result.Success) {
+                foreach (var brands in result.Data)
+                {
+                    Console.WriteLine("{0} id numarasına ait : {1} Marka", brands.BrandId, brands.BrandName);
+                }
+            }
+            else
             {
-                Console.WriteLine("{0} id numarasına ait : {1} Marka",brands.BrandId,brands.BrandName);
+                Console.WriteLine(result.Message);
             }
         }
 
         private static void GetColorTest()
         {
             ColourManager colourManager = new ColourManager(new EfColorDal());
-            foreach (var colors in colourManager.GetAll())
+            var result = colourManager.GetAll();
+            if (result.Success)
             {
-                Console.WriteLine(colors.ColorName);
+                foreach (var colors in result.Data)
+                {
+                    Console.WriteLine(colors.ColorName);
+                    
+                }
+                Console.WriteLine(Message.ColorsListed);
+            }
+            else
+            {
+                Console.WriteLine(result.Message);
             }
         }
 
         private static void getCarAll()
         {
             CarManager carManager = new CarManager(new EfCarDal());
-            foreach (var cars in carManager.GetAll())
+            var result = carManager.GetAll();
+
+            if(result.Success)
             {
-                Console.WriteLine(cars.Description);
+                foreach (var cars in result.Data)
+                {
+                    Console.WriteLine(cars.Description);
+                }
             }
+            else
+            {
+                Console.WriteLine(result.Message);
+            }
+
+            
         }
     }
 }
