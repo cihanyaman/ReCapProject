@@ -46,7 +46,8 @@ namespace Business.Constants
         public static string RentalNameInvalid = "Kiralama bulunamadı.";
         public static string RentalUpdated = "Kiralama bilgileri güncellendi.";
         public static string CarIsAlreadyRented = "Bu araba zaten kiralanmış.";
-
-
+        public static string CarCountOfBrandError = "Marka sayısı 15'i geçemez.";
+        public static string CarNameAlreadyExists = "Araba isimleri aynı olamaz.";
+        internal static string CategoryLimitExceded = "Limit aşıldığı için yeni ürün eklenemi";
     }
 }

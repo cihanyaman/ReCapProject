@@ -2,6 +2,7 @@
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -16,18 +17,28 @@ namespace Business.Concrete
 {
     public class CarManager : ICarService
     {
-        private readonly ICarDal _carDal;
+        ICarDal _carDal;
+        IBrandService _brandService;
 
-        public CarManager(ICarDal carDal)
+        public CarManager(ICarDal carDal, IBrandService brandService)
         {
             _carDal = carDal;
+            _brandService = brandService;
         }
+
         [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
-            
+            IResult result = BusinessRules.Run(CheckIfCarCountOfBrandCorrent(car.BrandId)
+                            , CheckIfCarNameExists(car.Description)
+                            , CheckIfBrandLimitExceded());
 
-            _carDal.Add(car);
+            if (result != null)
+            {
+                return result;
+            }
+
+                _carDal.Add(car);
             return new SuccessResult(Message.CarAdded);
         }
 
@@ -66,6 +77,36 @@ namespace Business.Concrete
         {
             _carDal.Update(car);
             return new SuccessResult(Message.CarUpdated);
+        }
+
+        private IResult CheckIfCarCountOfBrandCorrent(int brandId)
+        {
+            var result = _carDal.GetAll(c => c.BrandId == brandId).Count;
+            if(result>15)
+            {
+                return new ErrorResult(Message.CarCountOfBrandError);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfCarNameExists(string description)
+        {
+            var result = _carDal.GetAll(c => c.Description == description).Any();
+            if (result)
+            {
+                return new ErrorResult(Message.CarNameAlreadyExists);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfBrandLimitExceded()
+        {
+            var result = _brandService.GetAll();
+            if (result.Data.Count > 15)
+            {
+                return new ErrorResult(Message.CategoryLimitExceded);
+            }
+            return new SuccessResult();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Business.ValidationRules.FluentValidation
             RuleFor(p => p.Description).NotNull();
             RuleFor(p => p.DailyPrice).GreaterThan(0);
             RuleFor(p => p.DailyPrice).GreaterThanOrEqualTo(100).When(p => p.BrandId == 1);
-            RuleFor(p => p.ModelYear).LessThan(DateTime.Now.Year);
+            //RuleFor(p => p.ModelYear).LessThan(DateTime.Now.Year);
             RuleFor(p => p.ModelYear).NotEmpty();
             RuleFor(p => p.BrandId).GreaterThan(0);
             RuleFor(p => p.BrandId).NotEmpty();
